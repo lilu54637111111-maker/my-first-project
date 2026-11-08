@@ -309,6 +309,70 @@
         .product-card.hide {
             display: none;
         }
+    
+        .header-actions { display:flex; align-items:center; gap:1.5rem; }
+        .cart-toggle {
+            border:1px solid rgba(194,164,119,.65); background:#302a22; color:var(--text-light);
+            border-radius:999px; padding:.65rem 1rem; cursor:pointer;
+            font:700 .95rem 'Space Grotesk',sans-serif; white-space:nowrap; transition:.25s;
+        }
+        .cart-toggle:hover { background:#8d6b50; border-color:#c2a477; }
+        .cart-count {
+            display:inline-grid; place-items:center; min-width:1.45rem; height:1.45rem;
+            margin-left:.35rem; padding:0 .3rem; border-radius:50%;
+            background:#c2a477; color:#211e19; font-size:.78rem;
+        }
+        .cart-overlay {
+            position:fixed; inset:0; z-index:2000; display:grid; place-items:center;
+            padding:1rem; background:rgba(12,10,8,.78); backdrop-filter:blur(5px);
+        }
+        .cart-overlay[hidden] { display:none; }
+        .cart-panel {
+            width:min(100%,560px); max-height:min(90vh,850px); overflow-y:auto; padding:1.5rem;
+            border:1px solid rgba(194,164,119,.45); border-radius:18px; background:#302a22;
+            box-shadow:0 24px 80px rgba(0,0,0,.45);
+        }
+        .cart-heading { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1.25rem; }
+        .cart-heading h2 { color:var(--accent-gold); font-family:'Orbitron',sans-serif; font-size:1.45rem; }
+        .cart-close { border:0; background:transparent; color:var(--text-light); font-size:1.8rem; cursor:pointer; }
+        .cart-empty { padding:1.5rem 0; color:#cfc0aa; text-align:center; }
+        .cart-item {
+            display:grid; grid-template-columns:1fr auto; gap:.75rem; padding:1rem 0;
+            border-bottom:1px solid rgba(194,164,119,.2);
+        }
+        .cart-item-name { font-weight:700; }
+        .cart-item-price { color:#c2a477; margin-top:.25rem; font-size:.92rem; }
+        .cart-controls { display:flex; align-items:center; gap:.55rem; margin-top:.65rem; }
+        .cart-controls button {
+            width:2rem; height:2rem; border:1px solid rgba(194,164,119,.55); border-radius:7px;
+            background:#211e19; color:var(--text-light); cursor:pointer;
+        }
+        .cart-remove { border:0 !important; width:auto !important; padding:0 .35rem; color:#d0a58a !important; background:transparent !important; font-size:.85rem; }
+        .cart-total {
+            display:flex; justify-content:space-between; gap:1rem; padding:1.2rem 0; margin-top:.4rem;
+            border-top:1px solid rgba(194,164,119,.35); font-size:1.1rem; font-weight:700;
+        }
+        .checkout-form { display:grid; gap:.85rem; margin-top:.5rem; }
+        .checkout-form label { display:grid; gap:.35rem; color:#d9cbb8; font-size:.9rem; }
+        .checkout-form input, .checkout-form textarea {
+            width:100%; padding:.8rem .9rem; border:1px solid rgba(194,164,119,.4); border-radius:8px;
+            outline:none; background:#211e19; color:#eee7dc; font:inherit;
+        }
+        .checkout-form input:focus, .checkout-form textarea:focus { border-color:#c2a477; }
+        .checkout-submit {
+            width:100%; padding:.95rem 1rem; border:0; border-radius:9px;
+            background:linear-gradient(45deg,#987052,#c2a477); color:#fff;
+            font:700 1rem 'Space Grotesk',sans-serif; cursor:pointer;
+        }
+        .checkout-note { color:#b6a58f; font-size:.8rem; line-height:1.45; }
+        @media(max-width:600px) {
+            header { flex-wrap:wrap; gap:1rem; }
+            .header-actions { width:100%; justify-content:space-between; }
+            .nav-links { gap:1rem; }
+            .logo { font-size:1.6rem; }
+            .cart-panel { padding:1.1rem; }
+        }
+
     </style>
 </head>
 <body>
@@ -316,10 +380,15 @@
     <!-- Шапка сайту -->
     <header>
         <div class="logo">La_muse</div>
-        <ul class="nav-links">
-            <li><a href="#catalog">Каталог</a></li>
-            <li><a href="#contacts">Соцмережі</a></li>
-        </ul>
+        <div class="header-actions">
+            <ul class="nav-links">
+                <li><a href="#catalog">Каталог</a></li>
+                <li><a href="#contacts">Соцмережі</a></li>
+            </ul>
+            <button class="cart-toggle" id="cartToggle" type="button" aria-label="Відкрити кошик">
+                🛍️ Кошик <span class="cart-count" id="cartCount">0</span>
+            </button>
+        </div>
     </header>
 
     <!-- Головний банер -->
@@ -419,6 +488,26 @@
     </section>
 
     <!-- Контакты и соцсети -->
+    
+    <div class="cart-overlay" id="cartOverlay" hidden>
+        <section class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+            <div class="cart-heading">
+                <h2 id="cartTitle">Ваш кошик</h2>
+                <button class="cart-close" id="cartClose" type="button" aria-label="Закрити кошик">&times;</button>
+            </div>
+            <div id="cartItems" aria-live="polite"></div>
+            <div class="cart-total"><span>Разом до сплати:</span><span id="cartTotal">0 грн</span></div>
+            <form class="checkout-form" id="checkoutForm">
+                <label>Ваше ім’я<input name="customerName" autocomplete="name" required maxlength="80" placeholder="Як до вас звертатися?"></label>
+                <label>Номер телефону<input name="customerPhone" type="tel" autocomplete="tel" required maxlength="30" placeholder="+380..."></label>
+                <label>Місто та адреса доставки<textarea name="customerAddress" autocomplete="street-address" rows="2" required maxlength="300" placeholder="Місто, відділення або адреса"></textarea></label>
+                <label>Коментар до замовлення (необов’язково)<textarea name="customerComment" rows="2" maxlength="500" placeholder="Розмір, побажання тощо"></textarea></label>
+                <button class="checkout-submit" type="submit">Оформити замовлення в Telegram</button>
+                <p class="checkout-note">Після переходу в Telegram перевірте повідомлення та натисніть «Надіслати». Замовлення буде надіслано в чат @manager_muse.</p>
+            </form>
+        </section>
+    </div>
+
     <section class="contacts" id="contacts">
         <h2 class="section-title">Відчуй атмосферу</h2>
         <p style="color: #cfc0aa; max-width: 500px; margin: 0 auto;">Стеж за новими колекціями, особливими дропами та естетикою 2000-х у наших соцмережах:</p>
