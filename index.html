@@ -351,7 +351,7 @@
                     <div class="product-title">Джинси Low-Rise Leopard</div>
                     <div class="product-footer">
                         <span class="product-price">3 200 грн</span>
-                        <button class="buy-btn">Купити</button>
+                        <button class="buy-btn add-to-cart" type="button">Додати в кошик</button>
                     </div>
                 </div>
             </div>
@@ -363,7 +363,7 @@
                     <div class="product-title">Топ «бейбі-ті» з тигровим принтом</div>
                     <div class="product-footer">
                         <span class="product-price">1 100 грн</span>
-                        <button class="buy-btn">Купити</button>
+                        <button class="buy-btn add-to-cart" type="button">Додати в кошик</button>
                     </div>
                 </div>
             </div>
@@ -375,7 +375,7 @@
                     <div class="product-title">Худі на блискавці з леопардовим принтом</div>
                     <div class="product-footer">
                         <span class="product-price">2 900 грн</span>
-                        <button class="buy-btn">Купити</button>
+                        <button class="buy-btn add-to-cart" type="button">Додати в кошик</button>
                     </div>
                 </div>
             </div>
@@ -387,7 +387,7 @@
                     <div class="product-title">Сумка-багет з анімалістичним принтом</div>
                     <div class="product-footer">
                         <span class="product-price">1 850 грн</span>
-                        <button class="buy-btn">Купити</button>
+                        <button class="buy-btn add-to-cart" type="button">Додати в кошик</button>
                     </div>
                 </div>
             </div>
@@ -399,7 +399,7 @@
                     <div class="product-title">Футболка з декором зі стразів</div>
                     <div class="product-footer">
                         <span class="product-price">1 350 грн</span>
-                        <button class="buy-btn">Купити</button>
+                        <button class="buy-btn add-to-cart" type="button">Додати в кошик</button>
                     </div>
                 </div>
             </div>
@@ -411,7 +411,7 @@
                     <div class="product-title">Джинси Cargo Tiger Print</div>
                     <div class="product-footer">
                         <span class="product-price">3 400 грн</span>
-                        <button class="buy-btn">Купити</button>
+                        <button class="buy-btn add-to-cart" type="button">Додати в кошик</button>
                     </div>
                 </div>
             </div>
@@ -442,6 +442,7 @@
     </footer>
 
     <!-- Скрипт фільтрації -->
+
     <script>
         const filterButtons = document.querySelectorAll('.filter-btn');
         const productCards = document.querySelectorAll('.product-card');
@@ -450,9 +451,7 @@
             button.addEventListener('click', () => {
                 filterButtons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
-
                 const filterValue = button.getAttribute('data-filter');
-
                 productCards.forEach(card => {
                     if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
                         card.classList.remove('hide');
@@ -462,7 +461,152 @@
                 });
             });
         });
+
+        const cartToggle = document.getElementById('cartToggle');
+        const cartOverlay = document.getElementById('cartOverlay');
+        const cartClose = document.getElementById('cartClose');
+        const cartItemsEl = document.getElementById('cartItems');
+        const cartCountEl = document.getElementById('cartCount');
+        const cartTotalEl = document.getElementById('cartTotal');
+        const checkoutForm = document.getElementById('checkoutForm');
+        const TELEGRAM_USERNAME = 'manager_muse';
+        const CART_STORAGE_KEY = 'la_muse_cart_v1';
+        let cart = {};
+
+        try {
+            cart = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || '{}') || {};
+        } catch (error) {
+            cart = {};
+        }
+
+        const money = amount => new Intl.NumberFormat('uk-UA').format(amount) + ' грн';
+        const saveCart = () => {
+            try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); } catch (error) {}
+        };
+
+        function getCartProducts() {
+            return Object.entries(cart).map(([id, quantity]) => {
+                const card = document.querySelector('.product-card[data-product-id="' + id + '"]');
+                if (!card) return null;
+                const title = card.querySelector('.product-title').textContent.trim();
+                const priceText = card.querySelector('.product-price').textContent;
+                const price = Number(priceText.replace(/[^0-9]/g, ''));
+                return { id, title, price, quantity: Math.max(1, Number(quantity) || 1) };
+            }).filter(Boolean);
+        }
+
+        function renderCart() {
+            const products = getCartProducts();
+            const count = products.reduce((sum, item) => sum + item.quantity, 0);
+            const total = products.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            cartCountEl.textContent = count;
+            cartTotalEl.textContent = money(total);
+
+            if (!products.length) {
+                cartItemsEl.innerHTML = '<p class="cart-empty">Ваш кошик поки порожній 🐆<br>Додайте щось особливе з нашої колекції.</p>';
+                checkoutForm.hidden = true;
+                return;
+            }
+
+            checkoutForm.hidden = false;
+            cartItemsEl.innerHTML = products.map(item => {
+                const safeTitle = item.title.replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+                return '<article class="cart-item">' +
+                    '<div><div class="cart-item-name">' + safeTitle + '</div>' +
+                    '<div class="cart-item-price">' + money(item.price) + ' за одиницю</div>' +
+                    '<div class="cart-controls">' +
+                    '<button type="button" data-cart-action="minus" data-id="' + item.id + '" aria-label="Зменшити кількість">−</button>' +
+                    '<span>' + item.quantity + '</span>' +
+                    '<button type="button" data-cart-action="plus" data-id="' + item.id + '" aria-label="Збільшити кількість">+</button>' +
+                    '<button type="button" class="cart-remove" data-cart-action="remove" data-id="' + item.id + '">Видалити</button>' +
+                    '</div></div><strong>' + money(item.price * item.quantity) + '</strong></article>';
+            }).join('');
+        }
+
+        function openCart() {
+            renderCart();
+            cartOverlay.hidden = false;
+            document.body.style.overflow = 'hidden';
+            cartClose.focus();
+        }
+
+        function closeCart() {
+            cartOverlay.hidden = true;
+            document.body.style.overflow = '';
+            cartToggle.focus();
+        }
+
+        productCards.forEach((card, index) => {
+            card.dataset.productId = String(index + 1);
+        });
+
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', () => {
+                const card = button.closest('.product-card');
+                const id = card.dataset.productId;
+                cart[id] = (Number(cart[id]) || 0) + 1;
+                saveCart();
+                renderCart();
+                const originalText = button.textContent;
+                button.textContent = 'Додано ✓';
+                setTimeout(() => { button.textContent = originalText; }, 1000);
+            });
+        });
+
+        cartToggle.addEventListener('click', openCart);
+        cartClose.addEventListener('click', closeCart);
+        cartOverlay.addEventListener('click', event => {
+            if (event.target === cartOverlay) closeCart();
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && !cartOverlay.hidden) closeCart();
+        });
+
+        cartItemsEl.addEventListener('click', event => {
+            const button = event.target.closest('[data-cart-action]');
+            if (!button) return;
+            const id = button.dataset.id;
+            const action = button.dataset.cartAction;
+            if (action === 'plus') cart[id] = (Number(cart[id]) || 0) + 1;
+            if (action === 'minus') {
+                cart[id] = (Number(cart[id]) || 0) - 1;
+                if (cart[id] <= 0) delete cart[id];
+            }
+            if (action === 'remove') delete cart[id];
+            saveCart();
+            renderCart();
+        });
+
+        checkoutForm.addEventListener('submit', event => {
+            event.preventDefault();
+            const products = getCartProducts();
+            if (!products.length) return;
+            const formData = new FormData(checkoutForm);
+            const total = products.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            const orderLines = products.map(item =>
+                '• ' + item.title + ' — ' + item.quantity + ' × ' + money(item.price) + ' = ' + money(item.price * item.quantity)
+            );
+
+            const message = [
+                '🐆 НОВЕ ЗАМОВЛЕННЯ — La_muse',
+                '',
+                ...orderLines,
+                '',
+                'Разом: ' + money(total),
+                '',
+                'Ім’я: ' + formData.get('customerName'),
+                'Телефон: ' + formData.get('customerPhone'),
+                'Доставка: ' + formData.get('customerAddress'),
+                formData.get('customerComment') ? 'Коментар: ' + formData.get('customerComment') : ''
+            ].filter(Boolean).join('\n');
+
+            const telegramUrl = 'https://t.me/' + TELEGRAM_USERNAME + '?text=' + encodeURIComponent(message);
+            window.open(telegramUrl, '_blank', 'noopener,noreferrer');
+        });
+
+        renderCart();
     </script>
+
 
 </body>
 </html>
