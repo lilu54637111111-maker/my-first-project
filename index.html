@@ -699,28 +699,27 @@
             checkoutStatus.textContent = 'Надсилаємо замовлення. Будь ласка, зачекайте.';
 
             try {
+                const payload = new URLSearchParams({
+                    _subject: 'Нове замовлення — La_muse',
+                    _template: 'table',
+                    name: String(formData.get('customerName') || ''),
+                    phone: String(formData.get('customerPhone') || ''),
+                    delivery_address: String(formData.get('customerAddress') || ''),
+                    comment: String(formData.get('customerComment') || '—'),
+                    order: orderMessage,
+                    total: money(total),
+                    _url: window.location.href
+                });
+
                 const response = await fetch('https://formsubmit.co/ajax/tt543979@gmail.com', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        _subject: 'Нове замовлення — La_muse',
-                        _template: 'table',
-                        name: String(formData.get('customerName') || ''),
-                        phone: String(formData.get('customerPhone') || ''),
-                        delivery_address: String(formData.get('customerAddress') || ''),
-                        comment: String(formData.get('customerComment') || '—'),
-                        order: orderMessage,
-                        total: money(total),
-                        _url: window.location.href
-                    })
+                    headers: { 'Accept': 'application/json' },
+                    body: payload
                 });
 
                 const result = await response.json();
                 if (String(result.success) !== 'true') {
-                    throw new Error(result.message || 'Не вдалося надіслати замовлення.');
+                    throw new Error(result.message || 'Сервіс не підтвердив відправлення замовлення.');
                 }
 
                 cart = {};
@@ -729,7 +728,7 @@
                 renderCart();
                 checkoutStatus.textContent = 'Дякуємо! Замовлення надіслано. Ми зв’яжемося з вами найближчим часом.';
             } catch (error) {
-                checkoutStatus.textContent = 'Не вдалося надіслати замовлення. Перевірте з’єднання та спробуйте ще раз.';
+                checkoutStatus.textContent = 'Не вдалося надіслати замовлення: ' + (error.message || 'перевірте з’єднання та спробуйте ще раз.');
             } finally {
                 checkoutSubmit.disabled = false;
                 checkoutSubmit.textContent = 'Надіслати замовлення';
