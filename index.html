@@ -221,6 +221,11 @@
             position: relative;
         }
 
+        .photo-gallery { padding: 1rem 5% 4rem; }
+        .photo-gallery-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:1.2rem; }
+        .photo-gallery-grid img { width:100%; aspect-ratio:3/4; object-fit:cover; display:block; border-radius:12px; border:1px solid rgba(194,164,119,.35); background:#302a22; transition:transform .25s, box-shadow .25s; }
+        .photo-gallery-grid img:hover { transform:translateY(-5px); box-shadow:0 10px 24px rgba(0,0,0,.3); }
+
         .product-info {
             padding: 1.5rem;
         }
@@ -397,6 +402,25 @@
         <div class="hero-badge">🐆 Леопардова естетика • 2000-ні</div>
         <h1>La_muse</h1>
         <p>Вільний дух 2000-х. Одяг із характером та витонченим леопардовим акцентом.</p>
+    </section>
+
+    <section class="photo-gallery" aria-label="Фотографії колекції">
+        <h2 class="section-title">Фото колекції</h2>
+        <div class="photo-gallery-grid">
+            <img src="./photo_2026-11-08_18-42-21.jpg" alt="Фото колекції La_muse 1" loading="lazy">
+            <img src="./photo_2026-11-08_18-42-52.jpg" alt="Фото колекції La_muse 2" loading="lazy">
+            <img src="./photo_2026-11-08_18-42-53.jpg" alt="Фото колекції La_muse 3" loading="lazy">
+            <img src="./photo_2026-11-08_18-44-49.jpg" alt="Фото колекції La_muse 4" loading="lazy">
+            <img src="./photo_2026-11-08_18-47-48.jpg" alt="Фото колекції La_muse 5" loading="lazy">
+            <img src="./photo_2026-11-08_18-52-17.jpg" alt="Фото колекції La_muse 6" loading="lazy">
+            <img src="./photo_2026-11-08_18-57-45.jpg" alt="Фото колекції La_muse 7" loading="lazy">
+            <img src="./photo_2026-11-08_18-59-38.jpg" alt="Фото колекції La_muse 8" loading="lazy">
+            <img src="./photo_2026-11-08_19-02-18.jpg" alt="Фото колекції La_muse 9" loading="lazy">
+            <img src="./photo_2026-11-08_19-04-06.jpg" alt="Фото колекції La_muse 10" loading="lazy">
+            <img src="./photo_2026-11-08_19-08-09.jpg" alt="Фото колекції La_muse 11" loading="lazy">
+            <img src="./photo_2026-11-08_19-09-57.jpg" alt="Фото колекції La_muse 12" loading="lazy">
+            <img src="./photo_2026-11-08_19-11-34.jpg" alt="Фото колекції La_muse 13" loading="lazy">
+        </div>
     </section>
 
     <!-- Каталог -->
