@@ -211,6 +211,7 @@
         .product-img {
             height: 300px;
             background: linear-gradient(135deg, #574331, #30271f);
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -221,10 +222,12 @@
             position: relative;
         }
 
-        .photo-gallery { padding: 1rem 5% 4rem; }
-        .photo-gallery-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:1.2rem; }
-        .photo-gallery-grid img { width:100%; aspect-ratio:3/4; object-fit:cover; display:block; border-radius:12px; border:1px solid rgba(194,164,119,.35); background:#302a22; transition:transform .25s, box-shadow .25s; }
-        .photo-gallery-grid img:hover { transform:translateY(-5px); box-shadow:0 10px 24px rgba(0,0,0,.3); }
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
 
         .product-info {
             padding: 1.5rem;
@@ -404,25 +407,6 @@
         <p>Вільний дух 2000-х. Одяг із характером та витонченим леопардовим акцентом.</p>
     </section>
 
-    <section class="photo-gallery" aria-label="Фотографії колекції">
-        <h2 class="section-title">Фото колекції</h2>
-        <div class="photo-gallery-grid">
-            <img src="./photo_2026-11-08_18-42-21.jpg" alt="Фото колекції La_muse 1" loading="lazy">
-            <img src="./photo_2026-11-08_18-42-52.jpg" alt="Фото колекції La_muse 2" loading="lazy">
-            <img src="./photo_2026-11-08_18-42-53.jpg" alt="Фото колекції La_muse 3" loading="lazy">
-            <img src="./photo_2026-11-08_18-44-49.jpg" alt="Фото колекції La_muse 4" loading="lazy">
-            <img src="./photo_2026-11-08_18-47-48.jpg" alt="Фото колекції La_muse 5" loading="lazy">
-            <img src="./photo_2026-11-08_18-52-17.jpg" alt="Фото колекції La_muse 6" loading="lazy">
-            <img src="./photo_2026-11-08_18-57-45.jpg" alt="Фото колекції La_muse 7" loading="lazy">
-            <img src="./photo_2026-11-08_18-59-38.jpg" alt="Фото колекції La_muse 8" loading="lazy">
-            <img src="./photo_2026-11-08_19-02-18.jpg" alt="Фото колекції La_muse 9" loading="lazy">
-            <img src="./photo_2026-11-08_19-04-06.jpg" alt="Фото колекції La_muse 10" loading="lazy">
-            <img src="./photo_2026-11-08_19-08-09.jpg" alt="Фото колекції La_muse 11" loading="lazy">
-            <img src="./photo_2026-11-08_19-09-57.jpg" alt="Фото колекції La_muse 12" loading="lazy">
-            <img src="./photo_2026-11-08_19-11-34.jpg" alt="Фото колекції La_muse 13" loading="lazy">
-        </div>
-    </section>
-
     <!-- Каталог -->
     <section class="catalog" id="catalog">
         <h2 class="section-title">Каталог одягу</h2>
@@ -440,7 +424,7 @@
         <div class="products-grid">
             <!-- Товар 1 -->
             <div class="product-card" data-category="jeans">
-                <div class="product-img">Джинси «Дикий тигр»</div>
+                <div class="product-img"><img src="./photo_2026-11-08_18-42-21.jpg" alt="Джинси Low-Rise Leopard" loading="lazy"></div>
                 <div class="product-info">
                     <div class="product-title">Джинси Low-Rise Leopard</div>
                     <div class="product-footer">
@@ -452,7 +436,7 @@
 
             <!-- Товар 2 -->
             <div class="product-card" data-category="t-shirts">
-                <div class="product-img">Футболка у стилі 2000-х</div>
+                <div class="product-img"><img src="./photo_2026-11-08_18-42-52.jpg" alt="Топ бейбі-ті з тигровим принтом" loading="lazy"></div>
                 <div class="product-info">
                     <div class="product-title">Топ «бейбі-ті» з тигровим принтом</div>
                     <div class="product-footer">
@@ -463,10 +447,10 @@
             </div>
 
             <!-- Товар 3 -->
-            <div class="product-card" data-category="hoodies">
-                <div class="product-img">Оверсайз-худі</div>
+            <div class="product-card" data-category="bags">
+                <div class="product-img"><img src="./photo_2026-11-08_18-42-53.jpg" alt="Сумка Baguette чорна та коричнева" loading="lazy"></div>
                 <div class="product-info">
-                    <div class="product-title">Худі на блискавці з леопардовим принтом</div>
+                    <div class="product-title">Сумка Baguette</div>
                     <div class="product-footer">
                         <span class="product-price">2 900 грн</span>
                         <button class="buy-btn add-to-cart" type="button">Додати в кошик</button>
@@ -476,7 +460,7 @@
 
             <!-- Товар 4 -->
             <div class="product-card" data-category="bags">
-                <div class="product-img">Сумка-багет</div>
+                <div class="product-img"><img src="./photo_2026-11-08_18-44-49.jpg" alt="Сумка-багет" loading="lazy"></div>
                 <div class="product-info">
                     <div class="product-title">Сумка-багет</div>
                     <div class="product-footer">
@@ -488,7 +472,7 @@
 
             <!-- Товар 5 -->
             <div class="product-card" data-category="t-shirts">
-                <div class="product-img">Футболка «Гламур»</div>
+                <div class="product-img"><img src="./photo_2026-11-08_18-47-48.jpg" alt="Футболка з декором зі стразів" loading="lazy"></div>
                 <div class="product-info">
                     <div class="product-title">Футболка з декором зі стразів</div>
                     <div class="product-footer">
@@ -500,7 +484,7 @@
 
             <!-- Товар 6 -->
             <div class="product-card" data-category="jeans">
-                <div class="product-img">Джинси Cargo</div>
+                <div class="product-img"><img src="./photo_2026-11-08_18-52-17.jpg" alt="Джинси Cargo Tiger Print" loading="lazy"></div>
                 <div class="product-info">
                     <div class="product-title">Джинси Cargo Tiger Print</div>
                     <div class="product-footer">
